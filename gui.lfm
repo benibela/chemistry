@@ -1,0 +1,361 @@
+object Form1: TForm1
+  Left = 174
+  Height = 678
+  Top = 23
+  Width = 648
+  HorzScrollBar.Page = 647
+  VertScrollBar.Page = 677
+  ActiveControl = energyCalculateBtn
+  Caption = 'Molekülsimulator'
+  ClientHeight = 678
+  ClientWidth = 648
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  object Panel1: TPanel
+    Left = 179
+    Height = 366
+    Top = 187
+    Width = 469
+    Align = alClient
+    Caption = '3D Ansicht nicht geladen'
+    TabOrder = 7
+    OnMouseDown = Panel1MouseDown
+    OnMouseMove = Panel1MouseMove
+    OnResize = Panel1Resize
+  end
+  object Panel2: TPanel
+    Height = 182
+    Width = 648
+    Align = alTop
+    ClientHeight = 182
+    ClientWidth = 648
+    TabOrder = 6
+    object Label4: TLabel
+      Left = 10
+      Height = 14
+      Top = 153
+      Width = 42
+      Caption = 'Schritte:'
+      Color = clNone
+      ParentColor = False
+    end
+    object optimizeStepLabel: TLabel
+      Left = 160
+      Height = 14
+      Top = 152
+      Width = 13
+      Caption = '30'
+      Color = clNone
+      ParentColor = False
+    end
+    object lewisPanel: TPanel
+      Left = 184
+      Height = 160
+      Top = 16
+      Width = 458
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BevelOuter = bvNone
+      BevelWidth = 2
+      BorderWidth = 1
+      BorderStyle = bsSingle
+      ChildSizing.LeftRightSpacing = 2
+      ChildSizing.TopBottomSpacing = 2
+      ChildSizing.HorizontalSpacing = 2
+      ChildSizing.VerticalSpacing = 2
+      TabOrder = 0
+    end
+  end
+  object energyCalculateBtn: TButton
+    Left = 8
+    Height = 25
+    Top = 88
+    Width = 160
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Lageenergie berechnen'
+    OnClick = energyCalculateBtnClick
+    TabOrder = 0
+  end
+  object status: TMemo
+    Height = 120
+    Top = 558
+    Width = 648
+    Align = alBottom
+    Color = clBtnFace
+    ScrollBars = ssVertical
+    TabOrder = 1
+    WordWrap = False
+  end
+  object molSaveBtn: TButton
+    Left = 8
+    Height = 25
+    Top = 16
+    Width = 160
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Molekül speichern'
+    OnClick = molSaveBtnClick
+    TabOrder = 2
+  end
+  object geooptbtn: TButton
+    Left = 8
+    Height = 25
+    Top = 120
+    Width = 160
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Geometrie optimieren'
+    OnClick = geooptbtnClick
+    TabOrder = 3
+  end
+  object optimizeStepBar: TScrollBar
+    Left = 50
+    Height = 16
+    Top = 152
+    Width = 105
+    Position = 30
+    TabOrder = 4
+    OnScroll = optimizeStepBarScroll
+  end
+  object molLoadBtn: TButton
+    Left = 8
+    Height = 25
+    Top = 48
+    Width = 160
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Molekül laden'
+    OnClick = molLoadBtnClick
+    TabOrder = 5
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Height = 5
+    Top = 182
+    Width = 648
+    Align = alTop
+    Beveled = True
+    ResizeStyle = rsLine
+    ResizeAnchor = akTop
+  end
+  object Panel3: TPanel
+    Height = 366
+    Top = 187
+    Width = 179
+    Align = alLeft
+    ClientHeight = 366
+    ClientWidth = 179
+    TabOrder = 8
+    object Label1: TLabel
+      Left = 16
+      Height = 14
+      Top = 51
+      Width = 106
+      Caption = 'Abstand vom Molekül:'
+      Color = clNone
+      ParentColor = False
+    end
+    object viewDistance: TLabel
+      Left = 150
+      Height = 29
+      Top = 75
+      Width = 24
+      Color = clNone
+      ParentColor = False
+    end
+    object viewRotX: TLabel
+      Left = 152
+      Height = 39
+      Top = 123
+      Width = 57
+      Color = clNone
+      ParentColor = False
+    end
+    object viewRotY: TLabel
+      Left = 150
+      Height = 37
+      Top = 171
+      Width = 69
+      Color = clNone
+      ParentColor = False
+    end
+    object Label5: TLabel
+      Left = 16
+      Height = 14
+      Top = 99
+      Width = 108
+      Caption = 'Rotation um  x-Achse:'
+      Color = clNone
+      ParentColor = False
+    end
+    object label9: TLabel
+      Left = 19
+      Height = 14
+      Top = 147
+      Width = 105
+      Caption = 'Rotation um y-Achse:'
+      Color = clNone
+      ParentColor = False
+    end
+    object Label2: TLabel
+      Left = 17
+      Height = 14
+      Top = 197
+      Width = 35
+      Caption = 'Modell:'
+      Color = clNone
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 16
+      Height = 17
+      Top = 19
+      Width = 107
+      Caption = '3D Einstellungen'
+      Color = clNone
+      Font.Height = -13
+      Font.Style = [fsBold]
+      ParentColor = False
+    end
+    object Label6: TLabel
+      Left = 16
+      Height = 14
+      Top = 336
+      Width = 26
+      Anchors = [akLeft, akBottom]
+      Caption = 'Atom'
+      Color = clNone
+      ParentColor = False
+    end
+    object Label7: TLabel
+      Left = 16
+      Height = 14
+      Top = 250
+      Width = 63
+      Caption = 'Farbschema:'
+      Color = clNone
+      ParentColor = False
+    end
+    object loadOGLBtn: TButton
+      Left = 8
+      Height = 25
+      Top = 11
+      Width = 159
+      BorderSpacing.InnerBorder = 4
+      Caption = 'Lade 3D Ansicht'
+      OnClick = loadOGLBtnClick
+      TabOrder = 0
+    end
+    object viewBarDistance: TScrollBar
+      Left = 24
+      Height = 16
+      Top = 75
+      Width = 121
+      Min = 2
+      Position = 9
+      TabOrder = 1
+      OnScroll = viewBarDistanceScroll
+    end
+    object viewBarRotX: TScrollBar
+      Left = 24
+      Height = 16
+      Top = 123
+      Width = 121
+      Max = 180
+      Min = -180
+      TabOrder = 2
+      OnScroll = viewBarDistanceScroll
+    end
+    object viewBarRotY: TScrollBar
+      Left = 24
+      Height = 16
+      Top = 171
+      Width = 121
+      Max = 180
+      Min = -180
+      TabOrder = 3
+      OnScroll = viewBarDistanceScroll
+    end
+    object modelbox: TComboBox
+      Left = 24
+      Height = 21
+      Top = 219
+      Width = 140
+      AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+      ItemIndex = 1
+      Items.Strings = (
+        'Kalottenmodell'
+        'Kugel-Stab-Modell'
+      )
+      MaxLength = 0
+      OnChange = modelboxChange
+      Style = csDropDownList
+      TabOrder = 4
+      Text = 'Kugel-Stab-Modell'
+    end
+    object Button3: TButton
+      Left = 113
+      Height = 25
+      Top = 331
+      Width = 55
+      Anchors = [akLeft, akBottom]
+      BorderSpacing.InnerBorder = 4
+      Caption = 'analysieren'
+      OnClick = Button3Click
+      TabOrder = 5
+    end
+    object atomNr: TEdit
+      Left = 48
+      Height = 23
+      Top = 333
+      Width = 56
+      Anchors = [akLeft, akBottom]
+      TabOrder = 6
+      Text = '0'
+    end
+    object colorbox: TComboBox
+      Left = 24
+      Height = 21
+      Top = 274
+      Width = 140
+      AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+      ItemIndex = 0
+      Items.Strings = (
+        'Normal'
+        'Druck'
+      )
+      MaxLength = 0
+      OnChange = modelboxChange
+      TabOrder = 7
+      Text = 'Normal'
+    end
+  end
+  object Splitter2: TSplitter
+    Cursor = crVSplit
+    Height = 5
+    Top = 553
+    Width = 648
+    Align = alBottom
+    Beveled = True
+    ResizeStyle = rsLine
+    ResizeAnchor = akBottom
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    left = 56
+    top = 152
+  end
+  object OpenDialog1: TOpenDialog
+    Title = 'Vorhandene Datei öffnen'
+    Filter = '*.mol|*.mol|Alle Dateien|*.*'
+    FilterIndex = 0
+    left = 56
+    top = 136
+  end
+  object SaveDialog1: TSaveDialog
+    Title = 'Datei sichern als'
+    DefaultExt = '.mol'
+    Filter = '*.mol|*.mol|Alle Dateien|*.*'
+    FilterIndex = 0
+    left = 24
+    top = 136
+  end
+end

@@ -1,0 +1,387 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <AlwaysBuild Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="0"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="29">
+      <Unit0>
+        <Filename Value="folding.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="153"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="w32initopengl.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="w32initOpengl"/>
+        <CursorPos X="3" Y="42"/>
+        <TopLine Value="30"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="153"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="ogldrawing.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="oglDrawing"/>
+        <CursorPos X="42" Y="28"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="153"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="atomicdrawing.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="atomicDrawing"/>
+        <CursorPos X="34" Y="124"/>
+        <TopLine Value="109"/>
+        <EditorIndex Value="12"/>
+        <UsageCount Value="153"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="gui.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="gui.lrs"/>
+        <UnitName Value="gui"/>
+        <CursorPos X="71" Y="305"/>
+        <TopLine Value="293"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="153"/>
+        <Bookmarks Count="2">
+          <Item0 X="40" Y="128" ID="1"/>
+          <Item1 X="20" Y="272" ID="9"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="extmath.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="extmath"/>
+        <CursorPos X="43" Y="320"/>
+        <TopLine Value="317"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="153"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="molecules.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="molecules"/>
+        <CursorPos X="21" Y="14"/>
+        <TopLine Value="2"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="153"/>
+        <Bookmarks Count="1">
+          <Item0 X="3" Y="89" ID="7"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="gtf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="gtf"/>
+        <CursorPos X="1" Y="30"/>
+        <TopLine Value="10"/>
+        <EditorIndex Value="15"/>
+        <UsageCount Value="153"/>
+        <Bookmarks Count="1">
+          <Item0 X="59" Y="190" ID="8"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <CursorPos X="6" Y="288"/>
+        <TopLine Value="271"/>
+        <UsageCount Value="45"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="stosim.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="stosim"/>
+        <CursorPos X="67" Y="18"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="14"/>
+        <UsageCount Value="123"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="atoms.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="atoms"/>
+        <CursorPos X="28" Y="11"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="13"/>
+        <UsageCount Value="123"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\internet\books\libraryparser.pas"/>
+        <UnitName Value="libraryParser"/>
+        <CursorPos X="36" Y="8"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="1"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="D:\programming\lazarus\lcl\interfaces\win32\win32wscontrols.pp"/>
+        <UnitName Value="Win32WSControls"/>
+        <CursorPos X="43" Y="217"/>
+        <TopLine Value="207"/>
+        <UsageCount Value="34"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\i386\mathu.inc"/>
+        <CursorPos X="10" Y="19"/>
+        <TopLine Value="2"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="D:\programming\lazarus\lcl\utrace.pp"/>
+        <UnitName Value="UTrace"/>
+        <CursorPos X="32" Y="59"/>
+        <TopLine Value="39"/>
+        <UsageCount Value="19"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\sysutils\datih.inc"/>
+        <CursorPos X="10" Y="121"/>
+        <TopLine Value="105"/>
+        <UsageCount Value="6"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\sysutils\dati.inc"/>
+        <CursorPos X="6" Y="703"/>
+        <TopLine Value="674"/>
+        <UsageCount Value="6"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="lewisrenderer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="lewisRenderer"/>
+        <CursorPos X="63" Y="23"/>
+        <TopLine Value="10"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="81"/>
+        <Bookmarks Count="4">
+          <Item0 X="9" Y="400" ID="2"/>
+          <Item1 X="12" Y="153" ID="3"/>
+          <Item2 X="14" Y="426" ID="4"/>
+          <Item3 X="3" Y="69" ID="5"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="D:\programming\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <CursorPos X="27" Y="135"/>
+        <TopLine Value="120"/>
+        <UsageCount Value="19"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="D:\programming\lazarus\lcl\menus.pp"/>
+        <UnitName Value="Menus"/>
+        <CursorPos X="20" Y="341"/>
+        <TopLine Value="327"/>
+        <UsageCount Value="19"/>
+        <Bookmarks Count="1">
+          <Item0 X="20" Y="341" ID="5"/>
+        </Bookmarks>
+      </Unit19>
+      <Unit20>
+        <Filename Value="D:\programming\lazarus\lcl\include\popupmenu.inc"/>
+        <CursorPos X="92" Y="67"/>
+        <TopLine Value="50"/>
+        <UsageCount Value="19"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="D:\programming\lazarus\lcl\extctrls.pp"/>
+        <UnitName Value="ExtCtrls"/>
+        <CursorPos X="14" Y="516"/>
+        <TopLine Value="504"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\classesh.inc"/>
+        <CursorPos X="3" Y="187"/>
+        <TopLine Value="193"/>
+        <EditorIndex Value="9"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\classes\streams.inc"/>
+        <CursorPos X="16" Y="436"/>
+        <TopLine Value="431"/>
+        <UsageCount Value="7"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\objpas\sysutils\filutilh.inc"/>
+        <CursorPos X="10" Y="76"/>
+        <TopLine Value="46"/>
+        <UsageCount Value="7"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="D:\programming\lazarus\fpc\2.0.4\source\rtl\i386\mathuh.inc"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="7"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="geometrycalculator.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="geometryCalculator"/>
+        <CursorPos X="1" Y="35"/>
+        <TopLine Value="20"/>
+        <EditorIndex Value="11"/>
+        <UsageCount Value="31"/>
+        <Loaded Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="energycalculator.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="energyCalculator"/>
+        <CursorPos X="26" Y="26"/>
+        <TopLine Value="14"/>
+        <EditorIndex Value="10"/>
+        <UsageCount Value="31"/>
+        <Loaded Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="D:\programming\lazarus\lcl\buttons.pp"/>
+        <UnitName Value="Buttons"/>
+        <CursorPos X="4" Y="97"/>
+        <TopLine Value="95"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit28>
+    </Units>
+    <JumpHistory Count="11" HistoryIndex="10">
+      <Position1>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="lewisrenderer.pas"/>
+        <Caret Line="157" Column="30" TopLine="135"/>
+      </Position2>
+      <Position3>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="16" Column="98" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="8" Column="3" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="lewisrenderer.pas"/>
+        <Caret Line="343" Column="41" TopLine="331"/>
+      </Position6>
+      <Position7>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="lewisrenderer.pas"/>
+        <Caret Line="306" Column="76" TopLine="294"/>
+      </Position8>
+      <Position9>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="12" Column="45" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="folding.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position11>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+      <Optimizations>
+        <VariablesInRegisters Value="True"/>
+        <OptimizationLevel Value="3"/>
+      </Optimizations>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Watches Count="1">
+      <Item1>
+        <Expression Value="a^"/>
+      </Item1>
+    </Watches>
+    <Exceptions Count="1">
+      <Item1>
+        <Name Value="EAssertionFailed"/>
+        <Enabled Value="False"/>
+      </Item1>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

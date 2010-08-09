@@ -1,0 +1,552 @@
+\documentclass [a4paper, 12pt] {article}
+\usepackage{ngerman} %Deutsche Sprache (Umlaute...)
+\usepackage[latin1]{inputenc} %Umlaute im Text erkennen
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[dvips]{graphicx} 
+%\usepackage{fancyhdr}
+% fuer Zitate
+\usepackage[round]{natbib}
+\setlength{\headheight}{28pt}
+
+\usepackage{lgrind} %nice code
+\usepackage{bb_code} %nice code
+
+
+\newcommand{\n}{\newline}
+\renewcommand{\b}{\textbf}
+\renewcommand{\u}{\underline}
+%\newcommand{	}{\par\noindent\n}
+\newcommand{\mN}{\mathbb{N}}
+
+
+%%Strange characters
+\newcommand{\scSHARP}{\char'043} 	
+\newcommand{\erf}{\textnormal{erf}}
+
+\usepackage[paper=a4paper,left=50mm,right=20mm,top=30mm,bottom=30mm]{geometry} 
+
+\usepackage{scrpage2}
+\usepackage{epsfig}
+
+\pagestyle{scrheadings}
+
+\title {Automatische Berechnung der Konformation von organischen Molekülen}
+\author{Benito van der Zander}
+\automark{section} 
+%\pagestyle{fancyplain}
+%\lhead{\headmark}
+%\rhead{\thepage}
+%\fancyfoot{}
+
+\ihead[]{\leftmark}
+\ohead[]{\pagemark}
+%\ofoot[\pagemark]{\pagemark}
+
+%\linespread{1.5}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\begin{document}
+%\begin{figure}
+%\maketitle
+%\end{figure}
+%\newpage
+\tableofcontents 
+
+
+\newpage
+\section*{Einleitung}
+\sectionmark{Einleitung}
+\addcontentsline{toc}{section}{Einleitung}
+In dieser Arbeit ging es mir darum, die Anforderungen an ein Verfahren zur möglichst exakten Vorhersage der Konformation von organischen Moleküls genauer kennen zu lernen.%Grenzen für die Berechnung der Konformation von organischen Molekülen zu ermitteln.\n
+\n
+Eine solche Vorhersage ist beispielsweise in der Biochemie sehr wichtig, wo man durch die Geometrie der Proteine mögliche Reaktionsmöglichkeiten und Funktionen erahnen kann.\n
+%Auf der einen Seite 
+Bekanntermaßen gibt es in der Chemie einige sehr einfache Modelvorstellungen über die räumliche Struktur der Moleküle, besonders bekannt ist hier zum Beispiel das Tetraedermodell.\n
+Kann man ein solches Modell für die Entwicklung eines Computerprogrammes benutzten, dass eine Konformation aus einer eingegebenen Lewisformel berechnet? \n
+Und wenn das der Fall ist, ist ein solches Programm brauchbar, oder weicht die berechnete  Struktur so gravierend von der Realität ab, dass sie komplett nutzlos ist?\n
+Dies sind interessante Fragen, besonders wenn man dieselben für ein gegenteilige Verfahren stellt. So soll Dirac nach \cite{MTUCheminformatics} schon 1929 gesagt haben:\n
+\begin{quote}
+"`The fundamental laws necessary for the mathematical treatment of a large part of physics and the whole of chemistry are thus completely known, and the difficulty lies only in the fact that application of these laws leads to equations that are too complex to be solved."'
+\end{quote}
+Also kann man die Struktur komplexer organischen Moleküle aus der Quantenphysik und Quantenchemie\footnote{\label{foot:1}Hierbei ist vielleicht anzumerken, dass neuerdings deutliche, makroskopische Indizien für eine andere fundamentale Theorie, die von einer Stringnetz-Flüssigkeit ausgeht, gefunden wurde, die vielleicht noch genauere Vorhersagen ermöglichen könnte, siehe New Scientist Magazin, 15 March 2007, Nummer 2595, Seite 8-9.}
+berechnen, oder sind die dazu nötigen Gleichungen wirklich unlösbar?\n
+Oder wenn sie doch lösbar sind, kann eine solche Lösung für große Moleküle auf heutigen Computern berechnet werden oder wäre dies zu Rechen- und Speicherintensiv?\n
+Und selbst wenn eine Berechnung nach heutigem Kenntnissstand möglich wäre, sind die dazu nötigen Verfahren hinreichend gut bekannt und dokumentiert, dass man sie %kann man die dazu nötigen Verfahren 
+ohne tiefgreifende Kenntnisse über die Quantenchemie 
+in nur drei Monaten lernen und sinnvoll in einem Computerprogramm implementieren kann? 
+Oder kann es sein, dass sie hierfür einfach zu komplex sind?%, oder sind sie hierfür zu komplex oder ? se Verfahren sein, dass diese Verfahren so kompliziert oder  sind die nötigen Informationen öffentlich verfügbar dass es ohne tiefgreifende Kenntnisse der Quantenchemie nicht möglich ist, diese Verfahren in nur drei Monaten in einem Computerprogramm zu realisieren?\n
+%Und wenn sie doch lösbar sind, sind die über die Quantenchemie verfügenbaren Inf
+%Ist ihre Lösung so kompliziert, dass eine Berechnung auf heutigen Computern nicht durchgeführt werden kann, oder 
+
+%Durch die Quantenphysik und der daraus entstandenen Quantenchemie sind die 
+Mit der Beantwortung dieser Fragen erfährt man die Grenzen für solche Verfahren und weiß infern man Präzision mindestens für Geschwindigkeit, oder umgekehrt, opfern muss, um überhaupt ein sinnvolles Ergebnis zu erhalten.
+
+In diesem Text stelle ich zuerst ein Verfahren, das schnell und mit geringer Genauigkeit eine Konformation ermitteln kann, dar und untersuche es auf seine Probleme hin.\n
+Anschließend beschreibe ich ein übliches quantenchemisches Verfahren, dass verspricht höhere Genauigkeit zu liefern und analysiere auch hier seine Probleme.
+
+Zusätzlich habe ich ein Computerprogramm entwickelt, dass beide Verfahren implementiert und somit durch die Vergleichsmöglichkeiten die unterschiedlichen Vor- und Nachteile nochmal illustriert.\n
+Eine Beschreibung davon findet man im Anhang, zusammen mit dem Ausdruck des Quellcodes.%Seine Besonderheiten findet im Anhang beschrieben und am Ende wird
+
+%Dabei werden die Vor- und Nachteile von diesem und solchen Verfahren im allgemeinen angesprochen. und anschließend die übliche 
+
+
+\newpage
+\section{Direkte Konformationsbestimmung}
+\subsection{Ein Tetraederverfahren}
+%Eine vorläufige Kernanordnung von der aus die genauere Geometrieoptimierung gestartet werden kann, lässt sich leicht durch das aus der Schule bekannte Tetraedermodell bestimmen.\n
+Ein für den Computer geeignetes Verfahren, dass die Konformation direkt berechnet, kann man aus dem aus der Schule bekannten Tetraedermodell herleiten.\n
+Bei der Ermittlung einer Struktur geht man von einem Atom, dargestellt eben durch eine orientierten Tetraeder, aus und setzt die an dieses Atom gebundenen Atome so, dass sich jeweils zwei Ecken der beiden Tetraeder für jedes Elektronenpaar berühren, also dass die Tetraeder an Spitze (Einfachbindung), einer Kante (Doppelbindung) oder einer Fläche (Dreifachbindung) aufeinander liegen.\n
+Geht man davon aus, dass sich der Atomkern genau im Zentrum des Tetraeder befindet, so liegt dann die Kern-Kern-Verbindungslinie genau auf der gemeinsamen Symmetrieachse der  beiden Tetraeder. Man kann also unterschiedliche Bindungslängen dann dadurch realisieren, dass man die Tetraeder auf dieser Symmetrieachse (auch in einander) verschiebt.\n
+Mathematisch lässt sich ein solcher Tetraeder am einfachsten durch die Koordinaten $\vec{r}_1,..,\vec{r}_4$ darstellen.\n
+Als Koordinatensystem wählt man am einfachsten ein lokales am Atom, bei dem die Position des Atomkerns $0$ ist. Dann muss für den Schwerpunkt, dem Zentrum des Tetraeders, $\vec{z} = \frac{1}{4}(\vec{r}_1+...+\vec{r}_4)$ gelten, dass $S = 0$ ist.\n
+Addiert man nun jeweils 2 oder 3 Eckpunktkoordinaten, so ergibt sich auf Grund der Symmetrie des Tetraeders genau das Dreifache des Vektors zum Mittelpunkt der Kante oder Fläche.\n
+Das heißt also, da im anderen Tetraeder dieselbe Verhältnisse gelten, dass wenn man die Koordinaten einer, zweier oder dreier Ecken addiert sich immer ein Vektor ergibt, der genau zum jeweils anderen Atomkern zeigt.\n
+Diesen muss man nur noch entsprechend der Bindungslänge skalieren und erhält somit die Koordinaten des nächsten Atomkerns.\n
+Nun hat man nur noch das Problem, um diesen Kern herum wieder einen Tetraeder zu konstruieren.\n
+Dies geht allerdings relativ einfach, denn wenn man zwei zusammenhängende Tetraeder hat, sieht man leicht, dass der zweite Tetraeder genau der erste, gespiegelt an der Ebene senkrecht zur Kern-Kern-Verbindungslinie zwischen ihnen ist.\n
+Noch einfacher ist es, eine spiegelnde Ebene parallel zu dieser zu benutzen, die durch den Kern des ersten Atoms verläuft, denn das Verschieben einer Spiegelebene verschiebt nur das Spiegelbild und ändert nicht die Verhältnisse. Eine so verschobene Ebene erzeugt den Tetraeder nun genau so, dass das Zentrum des Tetraeders im Nullpunkt liegt, da ja die Ebene durch diesen verläuft und somit das alte Zentrum nicht geändert wird.\n
+Nun kann man das nächste Atom  in genau derselben Weise betrachten, man legt einfach wieder ein Koordinatensystem durch den Kern und setzt die Koordinaten der mit diesem Atom verbundenen Atome auf die Koordinaten der Tetraederecken, von dem durch die Spiegelung entstandenen Tetraeder.\n
+Man muss noch beachten, dass mindestens eines der verbundenen Atome bereits positioniert wurde und mindestens eine Ecke bereits belegt ist. Dies lässt sich einfach dadurch berücksichtigen, dass man Ecken in einer bestimmten Reihenfolge besetzt und die gerade belegten Ecken ans Ende der Liste schiebt. \n
+Um die Abstände der Tetraeder zu bestimmen braucht man noch eine Möglichkeit die Bindungslänge zu ermitteln. Ich benutze dafür die Formel von Schomaker und Stevenson die bei \cite{BindungsLaenge} erwähnt wird und, die die Bindungslänge als Summe der kovalenten Radien und der skalierten Elektronennegativität ausdrückt. Dies ist natürlich ziemlich ungenau, nicht jedoch im Vergleich zu der Winkelungenauigkeit durch das Tetraedermodells. Diese ist so hoch, das prinzipiell wahrscheinlich sogar eine Einheitslänge funktionieren würde.%
+
+\subsection{Genauigkeitsprobleme}
+Diese Methode ist schön schnell, was aber natürlich leider mit einer extrem hohen Ungenauigkeit bezahlt wird, da jede Atombindung einzeln betrachtet wird und die wichtigen Einflüsse der benachbarten Elektronen und Atome nicht berücksichtigt werden.\n
+Die Effekte bei einem Atom sind vorallem die Veränderung der Bindungswinkel und -länge durch benachbarte Bindungen, wie z.B.: die Änderung des Bindungswinkels von Wasser auf 105°.\n
+Ein bekanntes Modell, das dies (leider nur qualitativ) beschreibt ist das VSEPR-Modell \citep[s.23]{molStruk_rot}.\n
+Da es nur qualitativ ist, kann man es nicht direkt in einem Computerprogramm verwenden, man könnte allerdings versuchen die qualitativen Effekte mit einfachen Formel oder einer Erfassung aller Möglichkeiten zu quantifizieren.\n
+Ein weiteres Problem ist die Erfassung der Rotationswinkel um Einfachbindungen und Diederwinkeln an Doppelbindungen, die sich sehr leicht ändern. Bei diesem Tetraederalgorithmus sind alle Winkel einheitlich festgelegt, was natürlich chemisch nicht korrekt ist. Da diese Winkel aber von den Wechselwirkungen von allen Teilchen im Molekül abhängen, glaube ich nicht einem direkten Verfahren überhaupt möglich diese zu berechnen, man muss also ein Energieoptimierung benutzen.\n
+Da außerdem die Atom der Reihe nach angeordnet werden, ist das Verfahren vollkommen ungeeignet für Moleküle die Ringen enthalten, wie beispielsweise bei Benzol, weil die Atome im Ring der Reihe nach betrachtet werden und die letzte Bindung vollkommen ignoriert wird, da das Atom dann ja schon positioniert worden ist.\n
+Auch wenn lange Ketten mit Verzweigungen vorkommen, kann es vorkommen das sich zwei Ketten im Ergebnis kreuzen, sogar so stark, dass zwei Atomkerne übereinander positiniert werden. Dies ist natürlich physikalisch unmöglich.\n
+Wenn dies passiert ist die berechnete Anordnung im Grund noch nicht mal als vorläufige Näherung zu gebrauchen, da die Atome dann sehr große Strecken bis zu einer korrekten Konformation zurücklegen müssten, was mit präzisen quantenchemischen Berechnung wahnsinnig lange dauern kann.\n
+Noch schlimmer dabei ist es, dass bei der Quantentheorie ja nur von einer Anordnung von Elektronen und Kernen ausgegangen wird und nicht vom chemischen Modell der Bindung.\n
+Es kann daher durchaus vorkommen, dass, wenn die Energie durch das Auflösen einer Bindung stark sinken würde, dies auch passiert. Damit erhält man zwar eine optimiertes Molekülgeometrie, nicht jedoch die von einem anderen Molekül. \n
+Vor allem bei komplexen Biomolekülen, wie z.B.: Proteinen, kann es zu solchen Effekten kommen, da es dort ja viele freie Ketten gibt.\n
+Eine mögliche Lösung hierfür wäre es, die Atome nicht gleich in der Tetraederform anzuordnen, sondern für jedes Atom die gewünschte Struktur und die Abweichung davon zu berechnen. Die Stärke der Abweichung kann man dann als Energie betrachten und die im nächsten Abschnitt genannten mathematischen Verfahren der Energieoptimierung darauf anwenden, wodurch man wieder schrittweise eine bessere Geometrie erhält.\n
+Dadurch verliert man zwar gerade einen Großteil des Geschwindigkeitsvorteil, trotzdem ist dies noch sehr viel schneller als das quantenchemische Verfahren, da nur Wechselwirkungen zwischen zwei Atomen betrachtet werden.
+
+Zusammenfassend kann man sagen, dass sich dieses Tetraederverfahren gut für alle Berechnungen von Molekülen eignet, die keine komplexen Strukturen wie Ringe oder lange Seitenketten enthalten, wenn man mit groben Näherungen zufrieden ist und in erster Linie ein schnelles Ergebnis braucht.\n% der Schnelligkeit eignen sich das Verfahren sehr gut für eine Vorschau der Geometrie eignet, wä, die in Echtzeit geändert wird.\n	
+Sinnvolle Anwendungsfälle sind also beispielsweise die Vorberechnung bei einfacheren Molekülen um sinnvolle Strukturen für einen komplexeren Algorithmus, für didaktische Zwecke, da das Tetraedermodell ja auch in der Schule vorkommt und letztendlich auch für eine Vorschau eines eingegebenen Moleküles.
+\newpage
+\section{Energieoptimierung}
+\subsection{Mathematische Verfahren}
+%
+Bei der Energieoptimierung, oder in diesem Fall bei der Geometrieoptimierung, wird versucht die Paramter einer Energiefunktion solange zu varieren bis diese ein Minimum erreicht.\n
+%Hierbei ist es nützlich sich die 
+Dies ist in erster Linie ein mathematisches Problem für das es viele Lösungswege gibt. %Hier folge ich der Beschreibung in \citep[s.463-496]{matOpt} und \citep[]{QTderMol_rot}\n und erkläre zwei der am häufigsten verwendeten Algorithmen. Dies sind 
+%Die am häufigsten benutzten Algorithmen sind 
+%Gradientenverfahren, die mit der Ableitung der Energiefunktion arbeiten.\n
+Das einfachste ist das Verfahren des steilsten Abstiegs , dabei wird die Funktion nach allen ihren Parametern abgeleitet, wodurch man einen Vektor im Parameterraum erhält, der in die Richtung des größten Anwachsens der Energie zeigt.\n
+Das übliche Modell davon ist es, die Energiefunktion als Potentialhyperfläche im n-dimensionalen Raum zu betrachten, also als ein n-dimensionales Gebirge. Die Ableitung liefern dann eine Tangente an der steilsten Fläche, an der man dann ein Stück hinab "`rutscht"'.\n
+Dies wird dann solange wiederholt bis sich entweder die Energie oder die Ableitung kaum noch ändert.\n
+Eine genaue mathematische Beschreibung hiervon findet sich in \citep[s.463-478]{matOpt}.
+
+\subsection{Probleme}
+Bei allen Optimierungsverfahren gibt es das Problem der Ausgangssituation. Man benötigt eine realistische Annäherung an das tatsächliche Optimum, um die Berechnung überhaupt durchführen zu können.\n
+Hat man eine solche nicht, kann es leicht passieren, dass man bei der Optimierung in die Nähe eines anderen, lokalen Minimus gerät, dessen Energie zwar nicht minimal ist, jede kleine Bewegung jedoch eine höhere Energie gibt, bis ein Potentialberg überwunden ist.\n
+Da man dies im Grund nicht oder nur sehr aufwändig verhindern kann, muss man eine gute Möglichkeit finden eine solche Anfangskonformation zu wählen. Hierbei ist beispielsweise die im ersten Abschnitt beschriebene Tetraedermethode geeignet.\n
+Weiterhin taucht bei den Berechnungen im Rahmen dieses Optimierungsverfahrens das Problem auf, dass man die erste Ableitung der Energiefunktion kennen muss. Dies ist besonders dann problematisch, wenn diese Funktion sehr kompliziert ist, oder nicht geschlossen mathematisch dargestellt werden kann, sondern stattdessen von einem Algorithmus berechnet wird, wie es bei der Energiefunktion des SCF-Verfahren der Fall ist. Dann kann man nämlich nur schwer eine analytische Ableitung bestimmen, die dann auch noch sehr schwer (also extrem rechenintensiv) auszuwerten ist.\n
+Man kann dieses Problem dadurch umgehen lösen, dass man die Ableitung nach einer Koordinate numerisch berechnet, indem man die Energiefunktion an zwei Parameterpunkten berechnet und den Differenzenquotienten auswertet.\n
+Dies hat natürlich auch Nachteile, die beiden größten sind, dass die Berechnung der Energiefunktion sehr aufwendig ist, vor allem, wenn man sie an $2n$-Punkten auswerten muss.\n
+Außerdem gehen bei der numerischen Ableitung alle Informationen über die Punkte zwischen den beiden gewählten Punkten verloren. Deshalb muss man entweder große Sprünge(=Fehler) in kauf nehmen oder die Schrittweite sehr klein wählen, wodurch die Optimierung aber sehr viel länger dauert.\n
+Ein weiteres Problem bei diesem Verfahren ist, dass es in der Nähe des Minimums sehr langsam wird und, wenn das Minimum übersprungen wird, anfangen kann um dieses Minimum herum zu oszillieren, ohne je zu einem Ende zu kommen.\n
+Es gibt ein besseres Verfahren, das sogenannte Raphson-Newton-Verfahren, dass in \citep[]{QTderMol_rot}, \citep[s. 138]{abinitio_orange} und \citep[s.484-542]{matOpt} näher beschrieben wird. Die Grundidee ist, dass man über die Berechnung der zweiten Ableitung sehr viel schneller zum Minimum finden kann, indem man die Nullstelle der ersten Ableitung sucht.\n
+Hierin sieht man auch schon den großen Nachteil dieser Funktion, man braucht die 2te Ableitung, die noch schwerer und langsamer als die erste zu berechnen ist. \n
+Deshalb habe ich im Programm nur die langsamere Methode verwendet.
+
+\newpage
+\section{Energieberechnung}
+\subsection{Das SCF-Verfahren}
+%\label{sec:Verfahren}
+Diese Ausführung des Verfahrens ist eine Zusammenfassung von u.a. \citep[s. 1-54]{abinitio_blue} und \citep[s. 260-300]{QTderMol_rot}.\n
+Bei der quantenchemischen Energieberechnung geht man von der Schrödingergleichung $\mathbf{H}\Psi=E\Psi$ aus und versucht eine gültigen Wellenfunktion $\Psi$ mit einer minimalen Energie $E$ zu ermitteln.\n
+$\mathbf{H} =  \mathbf{T}_K + \mathbf{T}_e + \mathbf{V}_{KK} + \mathbf{V}_{ee} + \mathbf{V}_{eK}$ ist der Hamiltonoperator. \n
+$\mathbf{T}$ ist die kinetische Energie und $\mathbf{V_ij}$ die Energie der Wechselwirkung zwischen den Teilchen $i$ und $j$. \n
+Also $\mathbf{T}_K$ ist die kinetische Energie der Kerne, $\mathbf{T}_e$ die der Elektronen,   $\mathbf{V}_{KK}$ die Wechselwirkungsenergie zwischen je zwei Kernen, $\mathbf{V}_{ee}$ die zwischen Elektronen und $\mathbf{V}_{eK}$ schließlich die zwischen Kernen und Elektronen.\n
+Die einzelnen Operatoren werden aus der klassischen Mechanik und Elektrodynamik hergeleiten, indem man davon ausgeht, dass jeder Kern und jedes Elektron genau an einem Punkt lokalisiert ist.\n
+Es ergibt sich in SI-Einheiten für jeweils ein Teilchen $\mathbf{T}_i = \frac{\bar{h}^2}{2m_i}\nabla_i^2$ und $\mathbf{V}_{ij} = \frac{Z_iZ_je^2}{r_{ij}^2}$, wobei $r_{ij}$ der Abstand zwischen Teilchen $i$ und Teilchen $j$, $m_i$ die Masse des Teilchens $i$, $Z_i$ die Ladung, $\nabla_i^2$ der Laplaceoperator (die Summe der zweiten Ableitung der Wellenfunktion bezüglich aller Koordinaten des Teilchens $i$), $e$ die Elementarladung und $\bar{h}$ die Planckkonstante geteilt durch $2\pi$ ist.\n
+Der gesamte Summand ergibt sich dann durch die Summe aller Einteilchenoperatoren, also z.B.: $\mathbf{T}_e = \sum\limits^{N_e}_{i=1}T_i$, wenn $N_e$ die Summe aller Elektronen ist.\n
+Eine weitere Forderung an die Wellenfunktion $\Psi$ ist, dass sie normiert ist, also $\Psi^*\Psi = 1$, wobei $^*$, das komplex konjungierte meinte.\n
+Daraus folgt das Umstellen der Schrödingergleichung $E = \mathbf{H}\Psi/\Psi = \Psi^*\mathbf{H}\Psi$ ergibt, wobei man allerdings über den gesamten Raum integrieren muss, um die Gesamtenergie zu erhalten, also $E = \int \Psi^*\mathbf{H}\Psi dV 
+$%= <\Psi|\mathbf{H}|\Psi>$
+. Dies ist auch Postulat 5 der Quantentheorie, \citep[vgl. s. 31]{atome_grau}.
+%Die Schreibweise mit den Klammern ist ein Beispiel für die braket-Notation, die man unter anderem als Kurzschreibweise für Volumenintegrale über Orbitale benutzt.
+
+
+Genaugenommen ist dieser Hamiltonoperator nur eine Näherung, da er die magnetischen Effekte der unterschiedlichen Spinzustände der Elektronen ebenso wenig wie die Erkenntnisse der Relativitätstheorie berücksichtig werden, da sie schwer zu berechnen wären und nur geringe Einflüsse auf das Ergebnis haben.\n
+Trotzdem ist die Berechnung einer exakten Lösung schon sehr kompliziert, praktisch gilt sie sogar als unmöglich, wenn mehr als ein Atom vorkommt.\n
+Aus diesem Grund führt man eine Reihe von weiteren Näherungen ein.\n
+Die erste ist die sogenannte Born-Oppenheimer-Näherung, man setzt $T_K = 0$, da die Kerne sehr viel schwerer als die Elektronen sind, wodruch sie sich viel weniger bewegen und weniger Bewegungsenergie tragen (Eine genaue mathematische Begründung findet sich in \citep[s.142]{QTderMol_rot}).\n
+Außerdem macht es auch ja keinen Sinn, eine Kernanordnung von sich bewegenden Kernen zu bestimmen, allerhöchsten könnte man dann, wie bei den Elektronen, Orbitale angeben.\n
+Bei bewegungslosen Kernen ist weiterhin die Kernabstoßungsenergie $V_{kk}$ und die Wellenfunktion konstant (siehe wieder \citep[s.142]{QTderMol_rot}).\n
+Damit folgt für die Gesamtenergie $E_{ges} = E_e + E_k = E_e + V_{kk}$.\n
+$V_{kk}$ lässt sich direkt berechnen, $E_e$ ist eine Lösung der Schrödinger-Gleichung für Elektronen $\mathbf{H}_e\Psi_e=E_e\Psi_e$ mit $\mathbf{H}_e = \mathbf{T}_e + \mathbf{V}_{ee} + \mathbf{V}_{ke}$ und $\Psi_e$ als Wellenfunktion der Elektronen.\n
+Ausgehend vom chemischen Modell der Orbitale, kann man die Wellenfunktion $\Psi_e$ als Produkt von Molekülorbitalen $\psi_i$ betrachtet, was sich auch mathematisch ergibt, sofern man die Elektronenwechselwirkung ignoriert \citep[s.262ff.]{QTderMol_rot}.\n
+Genaugenommen handelt es sich aber nicht um ein einzelnes Produkt, %Diese Vorstellung muss aber leicht modifiziert werden, 
+denn auf Grund dem Pauliprinzip muss die entstandene Wellenfunktion antisymmetrisch bezüglich der Elektronenkoordinaten sein. Also wenn man die Koordinaten zweier Elektronen vertauscht, was gleichbedeutend ist mit der Vertauschung der Orbitale in denen sie sich aufhalten, muss sich das Vorzeichen der Funktion ändern.\n
+Mathematisch wird dies üblicherweise am besten durch eine Determinante ausdrücken, und zwar durch die sogenannte Slater-Determinante:\n
+$\Psi_e = \frac{1}{\sqrt{N!}}\left|
+\begin{matrix}
+\psi_1(x_1) & \psi_1(x_2) & \psi_1(x_3) & \cdots & \psi_1(x_n) \\
+\psi_2(x_1) & \psi_2(x_2) & \psi_2(x_3) & \cdots & \psi_2(x_n) \\
+\psi_3(x_1) & \psi_3(x_2) & \psi_3(x_3) & \cdots & \psi_3(x_n) \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+\psi_n(x_1) & \psi_n(x_2) & \psi_n(x_3) & \cdots & \psi_n(x_n) \\
+\end{matrix}
+\right|$\n
+Die Orbitale $\psi_i(x_j)$ sind dabei Spinorbitale, die sich also nicht nur in ihrer räumlichen Position unterscheiden, sondern auch in dem Spin den die Elektronen in ihnen haben.\n
+%Dies ist allerdings im wesentlichen ein mathematischer Formalismus, der zeigt, dass aus Molekülorbitalen, deren Produkt die Schrödingergleichung erfüllt, auch eine gültige Wellenfunktion erzeugt werden kann.\n
+Die Elektronen versuchen natürlich sich in den energetisch günstigsten Orbitalen aufzuhalten, daher befinden sich bei normalen, ungeladenen Molekülen mit geschlossenen Schalen jeweils zwei (nach dem Pauli-Prinzip die maximal mögliche Zahl) Elektronen in einem Ortsorbital, also sind nur $n/2$ Ortsorbitale besetzt.\n
+Bezeichnet man die Ortsorbitale mit $\phi_i$, so sind die vollständigen Orbitale durch $\psi_i=\phi_i\alpha$ oder $\psi_i=\phi_i\beta$ gegeben, je nach Spinzustand ($\alpha$ oder $\beta$) des Orbitals $\psi_i$.\n
+Um nun eine vollständig geschlossene Form der Molekülorbitale zu erhalten, muss man nur noch die Gestalt der Molekülorbitale ermitteln. \n
+Geht man von dem chemischen Konzept des Molekülbaus durch Atome aus, so ergibt sich leicht die Idee, dass die Orbitale eines einzelnen Atoms sich in den Bindungen überlagern, also dass die Molekülortsorbital Überlagerungen der Atomortsorbitale sind. Dieses Modell ergibt natürlich keine exakte Lösungen, aber für die meisten Fälle eine hinreichend gute.\n
+Nun sind Wellenüberlagerungen durch Addition der einzelnen Wellen gegeben, man kann also schreiben:\n
+$\phi_i=\sum\limits^M_{j=1}c_{ij}\chi_j$, \n
+wobei $M$ die Anzahl aller Atomorbitale (von allen Atome) ist, $c_{ij}$ die Parameter darstellen und $\chi_j$ das Atomorbital Numero $j$ ist.
+Ein schöne Übersicht über diese Näherungen findet man in \citep[s.84]{abinitio_blue}.
+
+Setzt man nun die durch die Determinante gegebene Wellenfunktion in das obrige Postulat 5 ein, so ergibt sich nach \citep[s.405-409]{MolPhyQC_orange}  und \citep[s.273-276]{QTderMol_rot}:
+$E=\sum\limits^{N_e}_{i=1}H_i + \frac{1}{2}\sum\limits^{N_e}_{i=1}\sum\limits^{N_e}_{j=1}(V_{ij,ij}-V_{ij,ji})$\n
+Dabei bedeutet $H_i$ die unabhängige Energie eines Elektrons in einem Orbitals, also das Ergebnis der Anwendung des Operators $(\mathbf{T}_i + \sum\limits_{k=1}^{N_k}\mathbf{V}_{ik})$ auf die Wellenfunktion des Orbital $i$, und $V_{ij,kl}$ die Elektronenwechselwirkung zwischen zwei Elektronen, das erste gleichzeitig in den Orbitalen i und j, das zweite gleichzeitig in den Orbitalen k und l, also die Anwendung des Operators $\mathbf{V}_{ef}$ auf diese beiden Orbitale.\n
+Zur einfacheren Schreibweise definiert man einen Einelektronenoperator $\mathbf{h}_i = \mathbf{T}_i + \sum\limits_{k=1}^{N_k}\mathbf{V}_{ik}$. Dann ergibt sich präzise:\n
+$H_i = \int \psi_i(e)^* \mathbf{h}_e \psi_i(e) dV_e d\sigma_e$\n
+$V_{ij,kl} = \int \int \psi_i(e)^* \psi_j(f)^* \mathbf{V}_{ef} \psi_k(e) \psi_l(f) dV_e d\sigma_e dV_f d\sigma_f$\n
+Der Parameter von $\psi$ gibt das Elektron an, dass sich im Orbital befindet, $dV_e$ ist das Volumenelement des Elektrons $e$ und $d\sigma_e$ dasselbe für den Spin.\n
+Haben die Orbitale nicht alle denselben Spinwert, ergibt die Integration über die Spinkoordinaten 0 und das ganze Integral verschwindet, haben sie denselben, kann man den Spin ignorieren, da er auf 1 normiert ist. \n
+In einem normalen, nicht ionisieren Molekül sind nur die $N_e/2$ Molekülorbitale mit der geringsten Energie besetzt, allerdings doppelt von zwei Elektronen mit unterschiedlichem Spin.\n
+Man kann dann wie in \citep[s.285]{QTderMol_rot} schreiben:\n
+$E=2\sum\limits^{N_e/2}_{i=1}H_i + 2\sum\limits^{N_e/2}_{i=1}\sum\limits^{N_e/2}_{j=1}(V_{ij,ij}-\frac{1}{2}V_{ij,ji})$\n
+Jede der Summe ergibt nur die Hälfte, was den Faktor 2 begründet. (Bei der Doppelsumme ergibt sich eigentlich 4, was sich aber gegen die 0.5 der vorherigen Formel kürzt). Da bei $V_{ij,ji}$ allerdings zwei Orbitale kombiniert werden, bleibt dieser Faktor dort allerdings erhalten.\n
+Man kann dann in den Integralen statt mit den Spinorbitalen $\psi$ mit den Ortsorbitalen $\phi$ arbeiten.
+%Dies ist wichtig, wenn man die Integrale statt mit dem Spinorbital $\psi$ mit dem Ortsorbital $\phi$ schreibt, wie ich es im folgenden aus Gründen der Einfachheit gemäß \citep[s.294]{QTderMol_rot} tue:%fällt $d\sigma$ wegen der Normierung auf $1$ weg.\n
+
+Nun berücksichtigt man die Darstellung der Molekülorbital als Atomorbitalen mit $\phi_i = \sum\limits^M_{j=1}c_{ij}\chi_j$:\n% wobei $M$ die Anzahl der möglichen Atomorbitale ist, $\chi_j$ das $j$-te Atomorbital und $c_{ij}$ der Koeffizient mit dem das AO $j$ zur Linearkombination vom MO $i$ beiträgt.\n
+Das Integral einer Summe von Funktionen ist bekanntlich die Summe der Integrale der einzelnen Funktionen, setzt man also die Definition von $\phi_i$ in die Integrale ein, so ergibt sich:\n
+$H_i = \sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}c_{i\mu}c_{i\nu}\int \chi_j(e)^* \mathbf{h}_e \chi_k(e) dV_e$\n
+$V_{ij,kl} = \sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}c_{i\mu}c_{j\nu}c_{k\rho}c_{l\sigma}\int \int \chi_\mu(e)^* \chi_\nu(f)^* \mathbf{V}_{ef} \chi_\rho(e) \chi_\sigma(f) dV_e dV_f$.\n
+(Die linken Parameter bestimmen die Orbitale, also $1\leq i,j,k,l \leq N_e$).
+Schreibt man das große Integral als $(\mu\nu,\rho\sigma)$ und das kleine als $h_{\mu\nu}$ so ergibt das Einsetzen der Integrale in die Energiefunktion nach \citep[s.294]{QTderMol_rot} und \citep[s. 314]{QC_black}:\n
+$E = \sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}P_{\mu\nu}\left[h_{\mu\nu} + \frac{1}{2}\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}P_{\rho\sigma}\left((\mu\nu,\rho\sigma)- \frac{1}{2}(\mu\sigma,\rho\nu)\right)\right]$.\n
+mit $P_{\mu\nu} = 2\sum\limits^{N/2}_{i=1} c_{i\mu}^*c_{i\nu}$.\n
+%Etwas irritierend wirkt hierbei der zweite Faktor $\frac{1}{2}$, der in der originalen Gleichung nicht auftaucht, dieser kommt wahrscheinlich von der Annahme minimaler geschlossener Schalen bei denen sich in jedem Orbital zwei Elektronen befinden, also entweder von der Abtrennung der Spinfunktionen oder der Begrenzung auf die ersten $N/2$ Orbitale, die die niedrigste Energie besitzen.\n
+Der Inhalt der eckigen Klammer wird auch mit $F_{\mu\nu}$ als Element der Fockmatrix $F$ bezeichnet.\n
+Multipliziert man den zu Anfang gegebenen Ausdruck für die Energie $\int \Phi^* \mathbf{H} \Phi dV$ aus, ergibt sich eine ähnliche Form. Durch Analogieschluss könnte man nun schließen, dass es einen Fockoperator geben muss, der dem Hamiltonoperator ähnelt, aber nur auf jeweils ein Orbital wirkt, da die Energie als Summe aller Orbitale ausgedruckt ist.\n % Die Integrale in diesem Ausdruck ähneln dem Hamilton  
+Dies ist tatsächlich der Fall, und man kann, wie es in \citep[s. 277-281]{QTderMol_rot} getan wird, ihn mathematisch herleiten. \n
+Wendet man ihn dann auf die Gleichungen an, ergeben sich nach \citep[s. 294]{QTderMol_rot} und \citep[Kurs. 61407]{chemgapedia} die Roothaan-Hall-Gleichungen:\n
+$\sum\limits^M_{j=1}c_{lj}(F_{ij} - \epsilon_l S_{ij}) = 0$.\n
+Hierbei bezeichnet $l$ mit $1 \leq l \leq N_e/2$ ein beliebiges Molekülorbital, $i$ mit $1 \leq i \leq M$ ein beliebiges Atomorbital, $\epsilon_l$ einen mit dem Molekülorbital verbunden Energiewert und $S_{ij}$ das Überlappungsintegral zwischen Atomorbital $i$ und $j$: $S_{ij} = \int \phi_i^* \phi_j dV$. 
+%Theoretisch ist jede Wellenfunktion, die die Schrödinger-Gleichung und das Pauliprinzip erfüllt, was bei den Linearkombinationen immer der Fall ist, physikalisch möglich. Allerdings werden sich ,  Man muss nun bei der Berechnung 
+Übersichtlicher kann man es in Form einer Matrix schreiben: $(F - \epsilon S)C = 0$.\n
+Dies ist ein kompliziertes Gleichungssystem, das man nicht direkt lösen kann, da die Fockmatrix $F$ erst durch die gesuchten Koeffizienten $C$ bestimmt wird.\n
+Man geht daher iterativ vor, berechnet, ausgehend von einer festgelegten Matrix $C$, die Matrix $F$. Damit löst man das Gleichungssystem und erhält eine neue $C$ Matrix.\n
+Irgendwann ist diese neue Matrix mit der alten fast identisch und man kann annehmen, dass man eine ausreichend gute Näherung gefunden hat.\n
+Es gibt einen Fall, wo das Lösen bei bekannter Fockmatrix relativ einfach ist, nämlich wenn $S = 1$ gilt. (1 = Einheitsmatrix im nxn-Matrixraum). Dann ergibt sich nämlich $FC=\epsilon C$.\n
+Dies ist genau ein Eigenwertproblem einer symmetrischen Matrix, wobei $\epsilon$ der Vektor der Eigenwerte und $C$ die Matrix der Eigenvektoren ist. Hierfür gibt es einigermaßen schnelle Algoritmen, der älteste ist der Jakobialgoritmus. \citep[s. 95-101]{abinitio_blue}.\n
+Dort ist ebenfalls bewiesen, dass eine beidseitige Multiplikation mit $S^{-\frac{1}{2}}$ immer diesen Spezialfall liefert: \citep[s. 137-146]{abinitio_blue}.\n
+Wie man nun genau die Atomorbitale und Integrale berechnet ist im Anhang erklärt.\n
+Der Name dieses Verfahren ist "`self consistent field"'-Verfahren, kurz SCF, wobei unklar ist, ob diese Abkürzung nun für die Matrizen steht oder die Anfangsbuchstaben des Namens.
+
+
+
+%$E=\sum\limits^N_{i=1}\sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}c_{i\mu}c_{i\nu} h_{\mu\nu} + \frac{1}{2}\sum\limits^N_{i=1}\sum\limits^N_{j=1}(\sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}c_{i\mu}c_{j\nu}c_{i\rho}c_{j\sigma} (\mu\nu,\rho\sigma)-\n\sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}c_{i\mu}c_{j\nu}c_{j\rho}c_{i\sigma} (\mu\nu,\sigma\rho))\n
+
+%=\sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}\sum\limits^N_{i=1}c_{i\mu}c_{i\nu}\left(h_{\mu\nu} + \frac{1}{2}\sum\limits^N_{j=1}\left(\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}c_{j\nu}c_{k\rho}c_{l\sigma} (\mu\nu,\rho\sigma)-\n\sum\limits^M_{\mu=1}\sum\limits^M_{\nu=1}\sum\limits^M_{\rho=1}\sum\limits^M_{\sigma=1}c_{i\mu}c_{j\nu}c_{k\rho}c_{l\sigma} (\mu\nu,\sigma\rho))$\n
+%Stellt man nun $\phi_i$ dur
+
+
+ %Wellenfunktion der Orbitale ij und des Orbitals kl.\n
+
+
+%Bei der endgültigen Berechnung werden nun auf jeden Fall, die 
+
+%Nun ist aber die oben komplette Ignorierung der Elektronenwechselwirkungen eine sehr drastistische Näherung, weshalb das Verfahren zu% den sogenannten Roothan-Hall-Gleichungen 
+%weiter entwickelt wurde.\n
+%...
+
+%%Obwohl die Wellenfunktion $\Phi$  durch eine Determinante mit $n!$ Ausdrücken definiert ist, braucht man nur ein mögliche Kombination, also eine beliebige Zeile der Slater-Determinanten-Matrix zu berücksichtigen, da die anderen sich gegenseitig aufheben. \citep[s. 274]{QTderMol_rot}.\n
+%Setzt man dies in das sogenannte Postulat 5 ein (s.o.), so ergibt sich $E = 	<\sum\limits^N_{i=1}\psi_i|H|\sum\limits^N_{j=1}\psi_j> = \sum\limits^N_{i=1}\sum\limits^N_{j=1}<\psi_i|H|\psi_j>$
+
+%Man braucht nun eine vorlö
+%Diese Gleichung stellt nun aber noch immer eine komplizierte Differentialgleichung dar, die nur schwer mathematisch direkt zu lösen ist. Hat man aber eine Funktion mit mehreren Parametern kann man versuchen diese so lange zu variieren, bis die Funktion "`passt"'.\n
+\newpage
+\subsection{Geschwindigkeitsprobleme}
+Das größte Problem stellen die Integrale $(\mu\nu,\rho\sigma)$ dar. Jede dieser vier Parameter läuft von 1 bis $M$, es gíbt also $M^4$ von diesen Integralen. Zwar gibt es eine gewisse Symmetrie, wie in \citep[s.60]{abinitio_orange} angegeben, so dass 88\% dieser Integrale gleich sind, trotzdem muss man noch $\frac{1}{8}M^4$ berechnen. Hat man durchschnittlich 3 Orbitale pro Atom, ergeben sich ungefähr $10N_k^4$ Integrale.\n
+Zwar bezeichnet man in der theoretischen Informatik solche Laufzeiten als effizient, trotzdem ergeben sich schon für 10 Atome 100 000 Integrale und eine Laufzeit von etwa 1,5 Minuten (falls der Computer 1000 Integrale pro Sekunde berechnen kann). \n
+Für 100 Atome ist die Zahl der Integrale schon zehntausendmal so hoch, also 1 Milliarde. Damit ist schon eine Laufzeit von 280 Stunden verbunden und ein Speicherverbrauch von ca. 3.8 GB (bei 4 Byte pro Integral). \n
+Für 200 Atome ist diese Zahl nochmals 16 mal so hoch, und die Rechenzeit beträgt etwa ein \emph{halbes Jahr} und der Speicherverbrauch 60.8 GB.\n
+Dieses Verfahren ist also für große Moleküle nicht zu gebrauchen. Dies erkennt man auch an meinem Beispielsprogramm, wenn man versucht größere Moleküle zu berechnen.\n
+Es gibt aber alternative Verfahren, beispielsweise ZDO, CNDO, NDDO, MNDO, INDO und MINDO, die sogenannten "`\underline{n}eglect of \underline{d}ifferential \underline{o}verlap"'-Verfahren \citep[s. 307f.]{QTderMol_rot}.\n
+Man ignoriert dabei die meisten Elektronenwechselwirkungsintegrale, wobei je nach Methode andere ignoriert werden.%sich die Methoden in der Art der ignorierten Integrale unterscheiden.\n
+
+Es gibt allerdings auch noch ein paar Genauigkeitsprobleme, die durch die getroffenen Näherungen begründet sind.\n
+So steigt z.B.: auch die kinetische Energie der Kerne mit steigendem Abstand, da sie mehr "`Bewegungsfreiraum"' haben. Das heißt die Energie ist bei größeren Abständen in Wirklichkeit höher als von dem Verfahren erkannt wird. Dies kann auch erklären, warum das Ergebnis meines Programmes bei Wasserstoff 0.085nm, beträgt und nicht wie in der Literatur 0.074 \citep[s.200]{QTderMol_rot}. Bei schweren und damit langsameren Sauerstoffmolekül dagegen beträgt der berechnete Wert 123nm, was sehr nahme am experimentellen nach \cite{webElements} von 0.120nm liegt.\n
+Eine weitere schlechte Näherung ist es die Molekülorbitale aus als Atomorbitalen zusammengesetz zu betrachten. Die Elektronen können nämlich auch auf andere Energieebenen wechseln, als gemeinhin angenommen.\n
+Ein Beispiel hierfür ist, dass in \citep[s. 137]{abinitio_orange} gesagt wird, für eine erfolgreiche Winkelberechnung von Atomen mit p-Orbitalen, müsse man auch d-Orbital benutzen, da sonst planar und pyramidale Bindungswinkel falsch berechnet werden.\n
+Ähnliches kann man auch im Programm sehen, wenn der Bindungswinkel von Wasser mit unter 98° angegeben wird, obwohl er in Wirklichkeit ca. 105° ist. (Die Tetraedermethode macht genau den umgekehrten Fehler, mit 109° ist der Winkel dort zu groß).
+Die ständige Benutzung von d-Orbitalen könnte das Programm also verbessen, allerdings
+ist die Berechnung von d-Orbitalen, wie man an den verwendeten Gleichungen sieht, sehr langsam und ihre Einbeziehung würde das sowieso schon sehr langsame Programm noch weiter verlangsamen, vielleicht sogar bis zur völligen Unbenutzbarkeit.
+
+
+%Die berechneten sind nicht ganz exakt. H2: 0.085nm, real 0.071
+%0,11 nm CH4 real
+%Bei der Berechnung der Konfiguration von Makromolekülen gibt es zwei grundlegende Probleme: \n
+%Erstens dauert eine Berechnung auf Grund der hohen Zahl (der 
+%In \citep[s. 137]{abinitio_orange} heißt es "`In contrast to bond lengths, where good predictions are mostly obtained with minimum and DZ basis sets, accurate predictions of bond angles in certain structures [e.g planar and pyramidal] are only obtained if polarization functions are included"'. Den ersten Teil dieser Aussage scheint mein Programm zu bestätigen, die Bindungswinkel sind komplett falsch. Ob die Einbeziehung von Polarizationsorbitalen, also d-Orbitale in Atomen die eigentlich nur s und p-Orbitale besitzen dagegen hilft, konnte ich dagegen aus Zeitgründen nicht mehr überprüfen.\n
+
+
+%Wie man oben sieht, muss man für die Berechnung der Elektronenwechselwirkungen ungefähr $\frac{1}{8}m^4$-Integrale berechnen und speichern, wobei $m$ die Zahl der möglichen Orbitale ist.\n
+%Angenommen es gibt durchschnittlich drei Orbitale pro Atom (z.B.: 50\% Wasserstoff mit einem und die anderen 50\% Kohlenstoff mit 5) so ergibt sich $\frac{81}{8}n^4 \approx 10n^4$.\n
+%Zwar bezeichnet man in der theoretischen Informatik solche Laufzeiten als effizient, trotzdem ergeben sich schon für 10 Atome 100 000 Integrale und eine Laufzeit von etwa 1,5 Minuten (falls der Computer 1000 Integrale pro Sekunde berechnen kann). \n
+%Für 100 Atome ist die Zahl der Integrale schon tausendmal so hoch, also 100 Millionen. Damit ist schon eine Laufzeit von 28 Stunden verbunden. \n
+%Für eine Energieberechnung ist das viel, aber viel schlimmer ist es, dann bei der numerischen Ableitung 2 Werte pro Koordinaten berechnet werden. Bei 100 Atomen im Raum gibt es 300 Koordinaten, also muss man 600mal die 28 Stundenrechnung durchführen: \emph{2 Jahre} Rechenzeit, für \emph{eine einzige Ableitung an einem einzigen Punkt}.\n
+%Dies ist offensichlich nicht praktikabel, vor allem nicht für große Biomoleküle wie Proteine.\n
+%Es gibt eine Vielzahl von möglichen Lösungen, die vor allem darauf beruhen, die Elektronenwechselwirkungsintegrale durch experimentelle Daten zu ersetzten, beispielsweise ZDO, CNDO, NDDO, MNDO, INDO und MINDO \citep[s.307f.]{QTderMol_rot}. 
+
+\newpage
+\section{Weitere grundlegende Probleme}
+Es gibt weitere grundlegende Probleme bei solchen Berechnungen.\n
+So wurde die gesamte Zeit davon ausgegangen, dass nur die Wechselwirkungen zwischen den Atomen des Moleküls zur Konformation beitragen. Wie man aber der Literatur, z.B.: \citep[s. 205]{Protein_grungros} und \citep[s. 151-175]{protFold_darkred} entnehmen kann, tragen auch benachbarte Moleküle zur Struktur bei.\n
+So können die Moleküle der Lösung, vor allem Wasser, in die Zwischenräume in einem großen Molekül eindringen und Wasserstoffbrückenbindungen oder auch nur van-der-Waals-Kräfte hervor rufen, die die Struktur ändern.\n
+Bei Wasser sind vor allem die Wasserstoffbrückenbildungen wichtig, die größe Moleküle in fast beliebiger Zahl mit ihrer Umgebung - also dem Wasser - knüpfen können. Dies bewirkt eine zusätzlich Enthalpieänderung, die die Struktur maßgeben beieinflussen kann.\n
+Insbesondere bei Proteinen sind auch sogenannte Chaperone bekannt, Proteine, die die Struktur anderer Proteine mitbestimmen.\n
+Es ist auch eine gängige Modellvorstellung, dass sich auf diese Weise Prionenerkrankungen, wie z.B.: BSE, verbreiten, also, dass die "`infizierten"' Prionen durch Kontakt mit anderen Prionen, diese wie Chaperone verformen und dadurch "`anstecken"'.\n
+Das die Struktur sich nicht wiederherstellt, könnte man durch das oben erwähnte Multi-Minima-Problem erklären. Wie der Computer muss auch das Universum eine energetisch güsntige Konformation finden und wenn es dazu eine Art Geometrieoptimierung benutzt, was es eigentlich muss, da sich gewöhnlich Atome nur über sehr kurze Strecken beamen, kann es dabei durch aus auch zu einer solchen Situation kommen.
+
+Ein weiteres Problem bei der Berechnung ist, die Vorstellung überhaupt Kernkoordinaten berechnen zu können.\n
+Auf Grund des Heisenbergschen Unschärfeprinzips bewegen sich nämlich, wie alle quantentheoretischen Teilchen, die Atomkerne eines Moleküles und befinden sich nie an einer genau definierten Position.\n
+Es gibt zwar Punkte mit höherer Aufenthaltswahrscheinlichkeit, versucht man aber diese zu beschreiben, so müssen man wie bei Elektoren Orbitale, oder ähnliches angeben, was aber eben keine Konformationen liefert.
+%Die Idee einer festen Kernanordnung kann also nur als Modell dienen.\n
+
+%Das ist viel, aber nicht unbedingt ein Problem. Viel schlimmer ist, dass diese 100 Millionen Integrale auch gespeichert werden müssen. Rechnet man mit einfacher Genauigkeit, so braucht man 4 Byte pro Integral, also 400 Millionen Byte = 380 MB.\n
+%
+%Im Grunde ist dies eine 
+
+%Die Richtung des Atomkernes 
+
+  
+
+% Zweitens wird ja eine Anordnung der Atomkerne gesucht und 
+
+
+
+\newpage
+\section*{Fazit}
+\addcontentsline{toc}{section}{Fazit}
+Wie man sehen kann, hat das Tetraederverfahren die in es gesteckten Erwartungen erfüllt.\n
+Zwar sind die Ergebnisse unpräzise und zeigen sogar stellenweise drastische Abweichung, was ja aber auch erwartet wurde. Die Geschwindigkeit dagegen ist hervorragen und es ist somit auch kein Problem, große Moleküle mit zehntausenden von Atomen in wenigen Sekunden - wenn auch falsch - zu berechnen.\n%, da jedes Atom nur einmal 
+Das quantenchemische Verfahren dagegen enttäuscht. Die extrem langsame Geschwindigkeit habe ich zwar erwartet, doch bin ich davon ausgegangen, dass es dafür einen entsprechenden Genauigkeitsvorteil geben würde. Dieser war jedoch im eingesetzten Verfahren nicht zu erkennen, da die Abweichungen von den experimentellen Daten in manchen Molekülen sogar noch größer waren, als bei dem Tetraederalgorithmus.\n
+Leider ist es hierbei unklar, ob dies von Programmierfehlern im entwickelten Computerprogramm herührt, oder von allgemeinen Schwäche der Verfahren. Vergleiche mit der Literatur zeigten jedoch, dass starke Abweichungen durchaus zu erwarten sind.
+
+Das Ziel Grenzen in den Möglichkeiten der Berechnung aufzuzeigen, wurde jedoch zumindest in einer Richtung erfüllt. \n
+So hat man deutlich gesehen, dass ein direktes Verfahren in komplexen Molekülen nicht zu zufriedenstellenden Ergebnissen führt und man auch komplexere Verfahren benutzen muss.\n
+In der anderen Richtung hat man aber auch gesehen, dass ein solches komplexeres Verfahren, nicht unmittelbar aus der fundamentalen Quantenchemie gewonnen werden kann, da selbst bei der Benutzung von Nährungen ein solches Verfahren zu langsam ist.\n
+Also ist hohe Präzision ebenso wie hohe Geschwindigkeit nicht zu erwarten.
+
+Man kann auch abschließend sagen, dass man für die erfolgreiche Berechnung einer Konformation einen Algorithmus benötigt und entwickeln muss, der einerseits von chemischen Modellvorstellungen ausgehen sollte, die von tatsächlichen physikalischen Gegebenheiten abstrahieren, und anderenseits auch die Geschenisse im kleinsten Maßstab berücksichtigen sollte.\n
+Dies zusammen ergibt, dass die Entwicklung sinnvoller Verfahren eine sehr komplizierte Gratwanderung darstellt.
+%Dies ist auch logisch, da die Wechselwirkungen immer 
+%Die Anwendung der Verfahren zeigt, das durchaus gute Grenzen für die Möglichkeiten der Berechnung bilden.\n
+
+
+
+\appendix
+
+\newpage
+\section{Atomorbitale und ihre Integrale}
+Bei der Berechnung von Orbitalen muss man einen mathematischen Ausdruck finden, der die Wellenfunktionen an einem Atom möglichst genau beschreibt.\n
+Es gibt nun gewisse Slater Typ Orbitale $sto = f r^{n-1}e^{-\varsigma*r} R^m_l(\vartheta,\theta)$, die der berechneten Form gut entsprechen. \citep[s.297]{QTderMol_rot}.\n
+$f$ ist dabei nur ein Skalierungsfaktor, $r$ der Abstand zum Kern, $n,m,l$ die Quantenzahlen, $e$ die Eulersche Zahl und $R(\vartheta,\theta)$ ein Winkelanteil.\n
+$\varsigma$ ist ein Parameter der für jedes Atom verschieden ist. Eine Liste dieser Parameter  mit Herleitung kann man in \cite{STOParams} finden.\n
+Diese Funktion ist allerdings nur sehr schwer zu integrieren, weshalb man sie als Linearkombination von Gauss Typ Funktionen schreibt. Eine solche GTF sieht so aus:\n
+$gtf = f x^u y^v z^w e^{-\alpha r^2}$.\n
+$f$ ist wieder ein Vorfaktor, $x,y,z$ zeigen die Abhängigkeit von den Koordinaten an, $r$ ist wieder der Kernabstand, $u+v+w$ ergibt die Hauptquantenzahl und $\alpha$ ist ein Parameter.\n
+Integrale über dieser Funktion sind leicht zu berechnen, da $r^2$ in $x^2+y^2+z^2$ zerfällt und das Integral in drei kleine für jede Koordinate aufgeteilt werden kann.\n
+Kompliziert ist die Bestimmung des Parameters $\alpha$. Zum Glück wurde die Berechnung bereits durchgeführt und es gibt entsprechende Tabellen, beispielsweise in \citep[s.88f]{abinitio_blue}.\n
+Man muss bei dieser Annäherung darauf achten nicht die Linearkombinationen zu verwechseln, zwar ist jedes Molekülorbital eine Linearkombination von Atomorbitalen, dass die Atomorbitale wiederum Linearkombination von Gaussfunktionen ist, hat damit aber nichts zu tun.
+Approximiert man eine STO durch n-GTFs, so sagt man, man benutzt eine STO-nG-Basis. Mein Programm arbeitet mit einer standardmäßigen STO-3G-Basis.
+
+Die genaue Berechnung der Integrale ist auch in \citep[s.112-119]{abinitio_blue} beschrieben und auch die Endergebnisse finden sich dort auf den Seiten 235 bis 239.\n
+Ich wiederhole sie hier deshalb nicht nochmal, sondern mache nur ein paar Anmerkungen.\n
+Es gibt dort nämlich eine ganze Reihe von Tippfehlern, die ich durch Vergleich mit \citep[s. 58f.]{abinitio_orange} herausfiltern musste. Im präziseren \cite{abinitio_orange} sind allerdings leider nur die s-Orbitale beschrieben.\n
+In \cite{abinitio_blue} ist auf Seite 235 der Normierungsfaktor angegeben, der das Überlappungsintegral des Orbitals mit sich selbst auf 1 bringen soll. Ein unbekannter Leser hat im Büchereiexemplar dort ein zusätzlich $pi^{frac{3}{2}}$ eingezeichnet. Eine einfache Überprüfung mit dem Mathematikprogramm Derive hat ergeben, dass dieser Faktor in der Tat mit eingebunden werden muss.\n
+In den Büchern wird nun eine Hilfsfunktion $f_k(l_1,l_2,\overline{PA}_x,\overline{PB}_x)$ benutzt (siehe \citep[s. 236]{abinitio_blue} und \citep[s. 58]{abinitio_orange}), allerdings ist die Definition in diesen Büchern unterschiedlich.\n
+In \citep{abinitio_blue} findet man diese (Variablennamen sind an \citep{abinitio_orange} angepasst):\n
+$f_k(l_1,l_2,\overline{PA}_x,\overline{PB}_x) = \sum\limits^{\min(k,l_1)}_{i=\max(0,i-l_2)}\binom{l_1}{i}\binom{l_2}{i-1}\overline{PA}_x^{l_1-i}\overline{PB}_x^{l_2+i-k}$\n
+und in \citep{abinitio_orange} findet man\n
+$f_k(l_1,l_2,\overline{PA}_x,\overline{PB}_x) = \sum\limits^{l_1}_{i=0}\sum\limits^{l_2}_{j=0}\ ^{(\textnormal{und} i+j=k)}\overline{PA}_x^{l_1-i}\binom{l_1}{i}\overline{PB}_x^{l_2-j}\binom{l_2}{j}$
+
+Die Funktion in \cite{abinitio_orange} besteht also aus zwei Summen, durch die zusätzliche Bedingung $i+j=k$, lässen sich aber trotzdem als einzelne Summe darstellen, wenn man $j$ durch $k-i$ ersetzt. Aus der zweiten Summe kann man die Bedingungen $0 \leq j \leq l_2$ gewinnen, also $0 \leq k-i \leq l_2 \Rightarrow -k \leq -i \leq l_2-k \Rightarrow k \geq i \geq k-l_2$.\n Kombiniert man dies mit den Bedingungen $l_1 \geq i \geq 0$, folgt $\min(k, l_1) \geq i \geq \max(0,k-l_2)$.\n
+Dies sind gerade die Grenzen der Funktion in \citep{abinitio_blue}. Allerdings unterscheidet sich diese Funktion auch dann noch von der in \citep{abinitio_orange}, wenn man wie eben beschrieben $j$ durch $k-i$ ersetzt und die Grenzen anpasst. Der zweite Binomialkoeffizient müsste dann nämlich $\binom{m}{j-i}$ heißen und nicht $\binom{m}{j-1}$.\n
+Dieser Unterschied lässt sich allerdings durch einen Tippfehler erklären, was sich dadurch bekräftigen lässt, das in der Ausgabe der Bücherei der unbekannte Leser auch diese Stelle als falsch markiert hat.\n
+Diese Hilfsfunktion gibt übrigens gerade je nach Parameter die unterschiedliche Faktoren bei der ausmultiplizierten Form von $(x+\overline{PA})^l(x+\overline{PB})^m$ an.\n
+Auf Seite 238 findet sich nun im Elektronwechselwirkungsintegral der Ausdruck $\frac{pi}{\gamma_1+\gamma_2}$, mit einem per Hand eingezeichnetem Wurzelzeichen. Diese Wurzel findet sich auch \cite{abinitio_orange}, weshalb ich davon ausgegangen bin, dass sie eingefügt werden muss.\n
+Ein weiterer markierter Fehler ist die Definition von Tau auf Seite 239 von \cite{abinitio_blue}. Hier habe ich mich auch für die Definition in \cite{abinitio_orange} entschieden.
+
+Davon, dass diese Fehlerkorrekturen angemessen waren, hat mich ein Beispiel in \cite{abinitio_blue} und die Überprüfung mit Derive überzeugt. \n
+Letztere hat gezeigt, dass sowohl das Überlappungsintegral, wie auch das Integral der kinetischen Energie stimmen. Die weiteren Integrale konnte ich leider nicht damit testen, da Derive diese nicht mehr lösen konnte.\n
+Im erwähnten Beispiel in \cite{abinitio_blue}, verstreut auf den Seiten 85f. und 156 wird das hypothetische lineare BeH$_2$ mit einer STO-2G-Basis berechnet. Mein Programm kann dies nicht direkt nach berechnen (da es weder Beryllium noch eine STO-2G-Basis benutzt), aber ich habe mit einer stellenweisen modifizierten Version das Molekül durchgerechnet.\n
+Alle der ca. 100 Integrale waren korrekt, allerdings habe ich dabei noch einen Fehler im Buch gefunden. Der $\alpha$-Parameter einer GTF war um exakt den Faktor 10 zu groß, was sowohl bei einem Nachrechnen der Integrale mit Derive, wie auch mit Nachrechnen der Linearkombinationserstellung herauskam. Wahrscheinlich handelt es sich also dieser Stelle, um ein Tippfehler und nicht bei allen 100 Integralen.
+
+Ich weiche allerdings in meinem Programm noch etwas weiter von der Berechnung in \cite{abinitio_blue} ab. Ich habe die Integrale in einen positionsunabhängigen und einen positionsabhängigen Teil zerlegt, wie man im Programmcode erkennen kann. \n
+Alle positionsunabhängigen-Teile werden einmal beim Programmstart berechnet und bei der eigentlichen Integralberechnung nur gelesen. Hierdurch wurde das Programm ein wenig schneller, der Effekt war aber nur minimal.\n
+Außerdem zerlege ich die STOs nicht explizit GTFs, sondern nur implizit bei der Berechnung der Integrale, wodurch der Quellcode einwenig übersichtlicher ist.
+
+%\section{Integrale}
+
+\section{Mathematische Symbole}
+Hier sind die im Hauptteil verwendeten mathematischen Symbole aufgelistet:
+\begin{tabular}{ll}
+ $C$ & Koeffizientenmatrix \\
+ $c_{ij}$ & Koeffizienten zur Linearkombination von Atomorbitalen \\
+ $dV$ & Volumenelement \\
+ $d\sigma$ & Spinelement \\
+ $\epsilon$ & Molekülorbitalenergieeigenwertvektor \\
+ $e$ & Elementarladung oder Index eines Elektrons oder Orbitals \\
+ $E$ & Energie \\
+ $E_{ges}$ & Energie des gesamten Moleküls\\
+ $E_e$ & Energie der Elektronen\\
+ $E_k$ & Energie der Kerne\\
+ $F$ & Fockmatrix\\
+ $F_ij$ & Element der Fockmatrix\\
+ $\bar{h}$ & Planckenergie geteilt durch $2\pi$ \\
+ $i$ & Index \\
+ $j$ & Index \\
+ $k$ & Index oder Kern\\
+ $l$ & Index \\
+ $\mathbf{H}$ & Hamiltonoperator  \\
+ $\mathbf{H}_e$ & Hamiltonoperator, beschränkt auf Elektronen  \\
+ $H_i$ & Ein-Elektronen Energie des i-ten Molekülorbitals  \\
+ $\mathbf{T}$ & allgemein kinetische Energieoperator \\
+ $T_k$ & kinetische Energie der Kerne \\
+ $\mathbf{T}_k$ & kinetische Kernenergieoperator \\
+ $\mathbf{T}_e$ & kinetische Elektronenenergieoperator\\
+ $\mathbf{V}_{ij}$ & allgemein Wechselwirkungsenergieoperator zwischen Teilchen $i$ und $j$\\
+ $\mathbf{V}_{ij,kl}$ & Wechselwirkungsoperator zwischen Elektronen in Orbitalen $i,j$ und $,k,l$\\
+ $\mathbf{V}_{kk}$ & Kern-Kern-Abstoßungsenergieoperator\\
+ $V_{kk}$ & Kern-Kern-Abstoßungsenergie\\
+ $\mathbf{V}_{ee}$ & Elektron-Elektron-Abstoßungsenergieoperator\\
+ $\mathbf{V}_{ek}$ & Elektron-Kern-Anziehungsenergieoperator\\
+ $m_i$ & Masse eines beliebigen Teilchens\\
+ $N_e$ & Anzahl aller Elektronen\\
+ $M$ & Anzahl aller Atomorbitale
+\end{tabular}
+
+\begin{tabular}{ll}
+ $r_{ij}$ & Abstand zwischen den Teilchen $i$ und $j$ \\
+ $S$ & Überlappungsmatrix\\
+ $S_{ij}$ & Element der Überlappungsmatrix\\
+ $\vec{r}_1$ bis $\vec{r}_4$& Eckpunkte eines Tetraeders\\  
+ $x_i$ & Koordinaten eines Teilchens \\
+ $Z_i$ & Ladungszahl eines Teilchens (-1 bei Elektronen) \\
+ $\vec{z}$ & Schwerpunkt eines Tetraeders \\
+ $\alpha,\beta$ & Spineigenschaft \\
+ $\Psi$ & Wellenfunktion \\
+ $\Psi_e$ & Wellenfunktion aller Elektronen\\
+ $\psi_e$ & Wellenfunktion/Spinorbital eines Elektrons.\\
+ $\phi_e$ & Ortsorbital eines Elektrons.\\
+ $\nabla^2$ & Laplaceoperator \\
+ $\chi_i$ & Atomorbital $i$ (eindeutig im gesamten Molekül).\\
+ $(\mu\nu,\rho\sigma)$ & Wie $V_{\mu\nu,\rho\sigma}$
+\end{tabular}
+
+\newpage 
+\section{Bilder}
+\newpage$\ $
+\newpage$\ $
+\newpage$\ $
+\newpage$\ $
+\newpage$\ $
+\newpage$\ $
+\newpage$\ $
+
+\newpage	
+\section{Programmübersicht}
+Das Programm ist in der Programmiersprache Pascal programmiert und zwar mit der kostenlosen Open-Source-Entwicklungsumgebung Lazarus.\n
+Bei der Benutzung muss man, das Molekül, das man berechnen lassen möchte in der oberen Bildschirmhälfte als Lewisformel eingeben. Atome erzeugen und löschen kann man dabei per Rechtsklick. Das Programm unterstützt nur H,C,N und O, die häufigsten Atome in organischen Molekülen.\n
+Man kann jeder Zeit in der mittleren Fensterfläche die 3D-Ansicht aktivieren, dann sieht man die aktuell berechnete Konformation und kann sie durch Anklicken bewegen.\n
+Programmiertechnisch wird dieses allgemeine Verhalten von der Datei gui.pas gesteuert. Die Lewis-Formel wird in der Datei lewisRenderer.pas verwaltet, die 3D-Ausgabe über OpenGL in oglDrawing.pas und atomicDrawing.pas.\n
+Die Tetraedergeometrieberechnung wird automatisch bei Veränderung der Lewisformel durchgeführt, die SCF-Optimierung wird dabei durch den Button "`Geometrieoptimierung"' aktiviert. Diese ist allerdings sehr langsam und funktioniert bekanntlich nur für sehr kleine Moleküle.\n
+Diese Funktionen sind im Quellcode in der Datei molecules.pas, die die generellen Molekülberechnungen enthält.\n
+Dort stehen auch die Routinen für das Laden und Abspeichern von Molekülen.\n
+Die Berechnung von Orbitalen und Orbitalintegralen findet man in den Dateien gtf.pas und stosim.pas. In stosim.pas werden auch die vorberechneten Integrale gespeichert.
+
+Es gibt zwei ausführbare Dateien folgind\_normal und folding\_schnell. Letzteres sollte ein wenig schneller sein, weil alle Fehlertest wie die Überprüfung auf einen Zugriff auf nicht vorhandene Elemente fehlt.
+
+\automark{subsection} 
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+%\newpage
+%(diese Seite wurde aus technischen Gründen leer gelassen)
+\newpage
+\section{Quellcode}
+\newcommand{\source}[1]{\subsection{#1}\begin{small}\lgrindfile{../#1.lg}\end{small}\newpage}
+\source{gui.pas}
+\source{oglDrawing.pas}
+\source{atomicDrawing.pas}
+\source{lewisRenderer.pas}
+\source{atoms.pas}
+\source{extmath.pas}
+\source{gtf.pas}
+\source{stosim.pas}
+\source{molecules.pas}
+\automark{section} 
+
+%MI: 2932 Zeilen, >=60 Seiten, <= 80 Seiten
+%\begin{small}
+ % \lgrindfile{../oglDrawing.pas.lg}
+%\end{small} 
+
+%\newpage
+%\section{Käse}
+%\setlength{\parindent}{0pt} 
+%\setlength{\parskip}{15pt} 
+%Man kann prinzipiell auf zwei unterschiedliche Weisen zu eine Methode zur Molekülstrukturvorhersage kommen, zum einem, indem man experimentell Gemeinsamkeiten zwischen Molekülen untersucht und diese verallgemeinert, zum anderen, indem man von den Gesetzen der Quantenphysik ausgehend.
+
+%Die Berechnung kann im Prinzip 
+%Es gibt unterschiedliche Methoden zur Vorhersage einer 
+
+%Geometrieoptimierung                                      
+%Bei der Geometrieoptimierung \citep[s. 145-7]{QTderMol_rot} geht man von vorgegebenen Konformation aus, die man iterativ solange verbessert, bis die Energie des Moleküles minimal ist.\n
+%Die einzelnen Methoden unterscheiden sich dabei in der Art und Weise der Berechnung der Energie und der nächsten Konformation.\n
+%Die Energieberechnung ist ein quantenchemisches Problem, dessen Lösung durch eine mathematische Funktion gegeben ist, die eine bestimmte Kernanordnung (z.B.: in kartesischen Koordinaten) in eine reele Zahl umwandelt. \n
+%Die Berechnung der nächsten Konformation ist, wenn man die Energiefunktion hat, ein rein %mathematisches Problem. \n
+%Das einfachste Verfahren ("`des steilsten Abstiegs"') ist es die Ableitung der Energiefunktion bezüglich den Kernkoordinaten zu ermitteln, wodurch man die Energieänderung des Systems bei einer Bewegung der Kerne kennt und die Kerne in die Richtungen bewegen kann, bei denen die Energie am stärken sinkt.\n
+%Da 
+
+%Hierbei tritt das Problem auf, dass diese Energieableitung an einem Atom, 
+
+%Hierbei treten mehrere Probleme auf. Zurerst einmal ist die genau Berechnung der Ableitung der Energiefunktion nicht möglich, zweitens kann die Bewegung eines Atoms die Energieänderung eines anderen Atoms ändern 
+
+
+
+\newpage
+%\section{Literaturverzeichnis}
+\bibliographystyle{alphadin}
+\addcontentsline{toc}{section}{Literaturverzeichnis}
+
+% Literaturliste endgueltig anzeigen
+\nocite{*}
+\bibliography{literatur}
+\newpage
+\section*{Selbständigkeitserklärung}
+Hiermit bestätige ich das ich die Arbeit selbständig alleine durchgeführt habe und außer den angegebenen Quellen keine weiteren benutzt habe.
+
+\end{document}
+ 
