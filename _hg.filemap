@@ -1,0 +1,2 @@
+include programs/data/chemistry
+rename programs/data/chemistry .
